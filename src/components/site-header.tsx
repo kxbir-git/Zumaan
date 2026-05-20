@@ -16,12 +16,12 @@ export function SiteHeader() {
   const { items, toggle: toggleCart } = useCart();
   const count = cartCount(items);
   const { scrollY } = useScroll();
-  const blur = useTransform(scrollY, [0, 80], [0, 18]);
+  const backdropFilter = useTransform(scrollY, [0, 80], ["blur(0px) saturate(160%)", "blur(18px) saturate(160%)"]);
   const bg = useTransform(scrollY, [0, 80], ["rgba(0,0,0,0)", "color-mix(in oklab, var(--card) 70%, transparent)"]);
 
   return (
     <motion.header
-      style={{ backdropFilter: blur.to((b) => `blur(${b}px) saturate(160%)`), backgroundColor: bg }}
+      style={{ backdropFilter, backgroundColor: bg }}
       className="sticky top-0 z-40 border-b border-transparent transition-colors data-[scrolled=true]:border-border"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
