@@ -181,7 +181,7 @@ function ShopPage() {
 
   const updateSearch = (patch: Partial<ShopSearch>) =>
     navigate({
-      search: (prev) => ({ ...prev, ...patch, page: "page" in patch ? patch.page! : 1 }),
+      search: (prev: ShopSearch) => ({ ...prev, ...patch, page: "page" in patch ? patch.page! : 1 }),
       replace: true,
     });
 
