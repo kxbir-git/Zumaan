@@ -1,29 +1,50 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, Heart, Minus, Plus, Shield, ShoppingBag, Truck } from "lucide-react";
+import { ArrowLeft, Check, Heart, Loader2, Minus, Plus, Shield, ShoppingBag, Truck } from "lucide-react";
 import { useState } from "react";
-import { fmtPrice, getProduct, PRODUCTS } from "@/lib/products";
+import { z } from "zod";
+import { fmtPrice, getProductById, type ProductDTO } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart-store";
 
+const productQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["products", "detail", id],
+    queryFn: async () => {
+      const p = await getProductById({ data: { id } });
+      if (!p) throw notFound();
+      return p;
+    },
+    staleTime: 60_000,
+  });
+
 export const Route = createFileRoute("/shop/$productId")({
-  component: ProductPage,
-  loader: ({ params }) => {
-    const product = getProduct(params.productId);
-    if (!product) throw notFound();
-    return { product };
+  params: {
+    parse: (raw) => ({ productId: z.string().uuid().parse(raw.productId) }),
+    stringify: (params) => ({ productId: params.productId }),
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.product.name} — NEONFIT` },
-          { name: "description", content: loaderData.product.description },
-          { property: "og:title", content: `${loaderData.product.name} — NEONFIT` },
-          { property: "og:description", content: loaderData.product.description },
-          { property: "og:image", content: loaderData.product.image },
-          { name: "twitter:image", content: loaderData.product.image },
-        ]
-      : [],
-  }),
+  loader: ({ params, context }) =>
+    context.queryClient.ensureQueryData(productQueryOptions(params.productId)),
+  component: ProductPage,
+  pendingComponent: () => (
+    <div className="grid min-h-[60dvh] place-items-center">
+      <Loader2 className="h-6 w-6 animate-spin text-ember" />
+    </div>
+  ),
+  errorComponent: ({ error }) => {
+    const router = useRouter();
+    return (
+      <div className="grid min-h-[60dvh] place-items-center px-6 text-center">
+        <div>
+          <h1 className="font-display text-3xl font-black">Couldn't load piece</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+          <button onClick={() => router.invalidate()} className="mt-6 rounded-full bg-gradient-ember px-6 py-3 text-sm font-medium text-ember-foreground transition hover:glow-ember">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  },
   notFoundComponent: () => (
     <div className="grid min-h-[60dvh] place-items-center px-6 text-center">
       <div>
@@ -38,21 +59,23 @@ export const Route = createFileRoute("/shop/$productId")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { productId } = Route.useParams();
+  const { data: product } = useSuspenseQuery(productQueryOptions(productId)) as { data: ProductDTO };
+
   const add = useCart((s) => s.add);
-  const [size, setSize] = useState(product.sizes[Math.floor(product.sizes.length / 2)]);
-  const [color, setColor] = useState(product.colors[0]);
+  const [size, setSize] = useState(product.sizes[Math.floor(product.sizes.length / 2)] ?? "M");
+  const [color, setColor] = useState(product.colors[0] ?? "Black");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
-  const related = PRODUCTS.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 3);
+  const image = product.images[0] ?? "";
 
   const handleAdd = () => {
     add({
       productId: product.id,
       name: product.name,
-      image: product.image,
-      priceCents: product.price,
+      image,
+      priceCents: product.price_cents,
       size,
       color,
       quantity: qty,
@@ -63,7 +86,6 @@ function ProductPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-16">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
         <Link to="/" className="hover:text-foreground">Home</Link>
         <span>/</span>
@@ -73,28 +95,22 @@ function ProductPage() {
       </nav>
 
       <div className="mt-8 grid gap-12 lg:grid-cols-2 lg:gap-16">
-        {/* Image */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}
           className="relative"
         >
           <div className="sticky top-24 overflow-hidden rounded-2xl bg-muted">
             <div className="relative aspect-[4/5]">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-full w-full object-cover"
-                width={1080}
-                height={1350}
-              />
-              <span className="absolute left-4 top-4 rounded-full bg-background/80 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-ember backdrop-blur">
-                {product.tag}
-              </span>
+              <img src={image} alt={product.name} className="h-full w-full object-cover" width={1080} height={1350} />
+              {product.is_new && (
+                <span className="absolute left-4 top-4 rounded-full bg-background/80 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-ember backdrop-blur">
+                  NEW
+                </span>
+              )}
             </div>
           </div>
         </motion.div>
 
-        {/* Details */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
           className="flex flex-col"
@@ -103,59 +119,67 @@ function ProductPage() {
           <h1 className="mt-3 font-display text-4xl font-black leading-none tracking-tighter sm:text-5xl">
             {product.name}
           </h1>
-          <p className="mt-4 font-display text-3xl font-bold tabular-nums">{fmtPrice(product.price)}</p>
-
-          <p className="mt-6 text-base leading-relaxed text-muted-foreground">{product.description}</p>
-
-          {/* Color */}
-          <div className="mt-8">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Color</span>
-              <span className="text-sm font-medium">{color}</span>
-            </div>
-            <div className="mt-3 flex gap-2">
-              {product.colors.map((c: string) => (
-                <button
-                  key={c}
-                  onClick={() => setColor(c)}
-                  className={`rounded-full border px-4 py-2 text-sm transition ${
-                    c === color
-                      ? "border-ember bg-ember/10 text-foreground"
-                      : "border-border text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
+          <div className="mt-4 flex items-baseline gap-3">
+            <p className="font-display text-3xl font-bold tabular-nums">{fmtPrice(product.price_cents)}</p>
+            {product.compare_at_cents && product.compare_at_cents > product.price_cents && (
+              <p className="font-mono text-sm text-muted-foreground line-through">{fmtPrice(product.compare_at_cents)}</p>
+            )}
           </div>
 
-          {/* Size */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Size</span>
-              <button className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
-                Size guide
-              </button>
-            </div>
-            <div className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-6">
-              {product.sizes.map((s: string) => (
-                <button
-                  key={s}
-                  onClick={() => setSize(s)}
-                  className={`rounded-md border py-3 text-sm font-medium tabular-nums transition ${
-                    s === size
-                      ? "border-ember bg-ember text-ember-foreground glow-ember"
-                      : "border-border hover:border-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
+          {product.description && (
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground">{product.description}</p>
+          )}
 
-          {/* Qty + add */}
+          {product.colors.length > 0 && (
+            <div className="mt-8">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Color</span>
+                <span className="text-sm font-medium">{color}</span>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {product.colors.map((c: string) => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className={`rounded-full border px-4 py-2 text-sm transition ${
+                      c === color
+                        ? "border-ember bg-ember/10 text-foreground"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {product.sizes.length > 0 && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Size</span>
+                <button className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                  Size guide
+                </button>
+              </div>
+              <div className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-6">
+                {product.sizes.map((s: string) => (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`rounded-md border py-3 text-sm font-medium tabular-nums transition ${
+                      s === size
+                        ? "border-ember bg-ember text-ember-foreground glow-ember"
+                        : "border-border hover:border-foreground"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-8 flex items-stretch gap-3">
             <div className="flex items-center rounded-full border border-border">
               <button
@@ -177,14 +201,19 @@ function ProductPage() {
 
             <button
               onClick={handleAdd}
-              className="group relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-ember font-medium text-ember-foreground transition hover:glow-ember"
+              disabled={product.stock <= 0}
+              className="group relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-ember font-medium text-ember-foreground transition hover:glow-ember disabled:cursor-not-allowed disabled:opacity-50"
             >
               <motion.span
                 key={added ? "added" : "add"}
                 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                 className="flex items-center gap-2"
               >
-                {added ? <><Check className="h-4 w-4" /> Added</> : <><ShoppingBag className="h-4 w-4" /> Add to bag · {fmtPrice(product.price * qty)}</>}
+                {product.stock <= 0
+                  ? "Sold out"
+                  : added
+                  ? <><Check className="h-4 w-4" /> Added</>
+                  : <><ShoppingBag className="h-4 w-4" /> Add to bag · {fmtPrice(product.price_cents * qty)}</>}
               </motion.span>
             </button>
 
@@ -196,7 +225,6 @@ function ProductPage() {
             </button>
           </div>
 
-          {/* Perks */}
           <div className="mt-10 grid gap-4 border-t border-border pt-8 sm:grid-cols-2">
             <div className="flex items-start gap-3">
               <Truck className="mt-0.5 h-4 w-4 text-ember" />
@@ -214,41 +242,18 @@ function ProductPage() {
             </div>
           </div>
 
-          {/* Material */}
           <div className="mt-8 rounded-2xl border border-border bg-card/40 p-5">
-            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Material</p>
-            <p className="mt-2 text-sm">{product.material}</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Stock</p>
+            <p className="mt-2 text-sm">
+              {product.stock > 50
+                ? "In stock — ships within 24h."
+                : product.stock > 0
+                ? `Only ${product.stock} left in this drop.`
+                : "Sold out — restocks are rare."}
+            </p>
           </div>
         </motion.div>
       </div>
-
-      {/* Related */}
-      {related.length > 0 && (
-        <section className="mt-24 border-t border-border pt-16">
-          <h2 className="font-display text-3xl font-black tracking-tighter sm:text-4xl">
-            You might also <span className="text-gradient-ember">like</span>.
-          </h2>
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {related.map((p, i) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-              >
-                <Link to="/shop/$productId" params={{ productId: p.id }} className="group block">
-                  <div className="aspect-[4/5] overflow-hidden rounded-xl bg-muted">
-                    <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  </div>
-                  <div className="mt-3 flex items-start justify-between">
-                    <h3 className="font-display text-sm font-bold tracking-tight">{p.name}</h3>
-                    <p className="font-display text-sm font-bold tabular-nums">{fmtPrice(p.price)}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
