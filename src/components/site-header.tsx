@@ -5,9 +5,9 @@ import { useTheme } from "./theme-provider";
 import { useCart, cartCount } from "@/lib/cart-store";
 
 const NAV = [
-  { to: "/", label: "New" },
-  { to: "/", label: "Shop" },
-  { to: "/", label: "Drops" },
+  { to: "/shop", label: "Shop" },
+  { to: "/shop", label: "New" },
+  { to: "/shop", label: "Drops" },
   { to: "/", label: "About" },
 ] as const;
 
