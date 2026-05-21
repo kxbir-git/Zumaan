@@ -114,7 +114,7 @@ function ProductPage() {
               <span className="text-sm font-medium">{color}</span>
             </div>
             <div className="mt-3 flex gap-2">
-              {product.colors.map((c) => (
+              {product.colors.map((c: string) => (
                 <button
                   key={c}
                   onClick={() => setColor(c)}
@@ -139,7 +139,7 @@ function ProductPage() {
               </button>
             </div>
             <div className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-6">
-              {product.sizes.map((s) => (
+              {product.sizes.map((s: string) => (
                 <button
                   key={s}
                   onClick={() => setSize(s)}
