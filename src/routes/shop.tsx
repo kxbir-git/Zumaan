@@ -68,11 +68,7 @@ export const Route = createFileRoute("/shop")({
   },
   component: ShopPage,
   errorComponent: ShopError,
-  pendingComponent: () => (
-    <div className="grid min-h-[60dvh] place-items-center">
-      <Loader2 className="h-6 w-6 animate-spin text-ember" />
-    </div>
-  ),
+  pendingComponent: CatalogSkeleton,
   head: () => ({
     meta: [
       { title: "Shop — NEONFIT 2027 Drop" },
@@ -82,6 +78,31 @@ export const Route = createFileRoute("/shop")({
     ],
   }),
 });
+
+function CatalogSkeleton() {
+  return (
+    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+      <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin text-ember" />
+        Loading drops…
+      </div>
+      <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="aspect-[4/5] w-full rounded-xl bg-muted" />
+            <div className="mt-4 flex items-start justify-between gap-3">
+              <div className="flex-1 space-y-2">
+                <div className="h-2 w-16 rounded bg-muted" />
+                <div className="h-3 w-3/5 rounded bg-muted" />
+              </div>
+              <div className="h-3 w-12 rounded bg-muted" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function ShopError({ error }: { error: Error }) {
   const router = useRouter();
