@@ -6,6 +6,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { fmtPrice, getProductById, type ProductDTO } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart-store";
+import { HERO_WIDTHS, imgSrcSet, imgUrl } from "@/lib/image";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
