@@ -23,6 +23,7 @@ import {
   type Sort,
 } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart-store";
+import { CARD_WIDTHS, imgSrcSet, imgUrl } from "@/lib/image";
 
 const searchSchema = z.object({
   category: z.enum(CATEGORY_OPTIONS).catch("All"),
