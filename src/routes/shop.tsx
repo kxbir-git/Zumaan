@@ -68,11 +68,7 @@ export const Route = createFileRoute("/shop")({
   },
   component: ShopPage,
   errorComponent: ShopError,
-  pendingComponent: () => (
-    <div className="grid min-h-[60dvh] place-items-center">
-      <Loader2 className="h-6 w-6 animate-spin text-ember" />
-    </div>
-  ),
+  pendingComponent: CatalogSkeleton,
   head: () => ({
     meta: [
       { title: "Shop — NEONFIT 2027 Drop" },
