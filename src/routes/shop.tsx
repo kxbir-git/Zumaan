@@ -114,12 +114,18 @@ function ShopCard({ p, idx }: { p: ProductDTO; idx: number }) {
       className="group relative"
     >
       <Link to="/shop/$productId" params={{ productId: p.id }} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted [contain:paint] [will-change:transform]">
           <img
-            src={image}
+            src={imgUrl(image, { width: 640 })}
+            srcSet={imgSrcSet(image, CARD_WIDTHS)}
+            sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 92vw"
             alt={p.name}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading={idx < 3 ? "eager" : "lazy"}
+            fetchPriority={idx === 0 ? "high" : "auto"}
+            decoding="async"
+            width={640}
+            height={800}
+            className="h-full w-full object-cover transition-transform duration-700 [transform:translateZ(0)] group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           {p.is_new && (
