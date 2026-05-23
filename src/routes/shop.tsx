@@ -113,7 +113,7 @@ function ShopCard({ p, idx }: { p: ProductDTO; idx: number }) {
       transition={{ duration: 0.4, delay: Math.min(idx, 8) * 0.04 }}
       className="group relative"
     >
-      <Link to="/shop/$productId" params={{ productId: p.id }} className="block">
+      <Link to="/shop/$productId" params={{ productId: p.id }} preload="intent" className="block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted [contain:paint] [will-change:transform]">
           <img
             src={imgUrl(image, { width: 640 })}
