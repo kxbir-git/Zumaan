@@ -19,7 +19,7 @@ const productQueryOptions = (id: string) =>
     staleTime: 60_000,
   });
 
-export const Route = createFileRoute("/shop/$productId")({
+export const Route = createFileRoute("/shop_/$productId")({
   params: {
     parse: (raw) => ({ productId: z.string().uuid().parse(raw.productId) }),
     stringify: (params) => ({ productId: params.productId }),
