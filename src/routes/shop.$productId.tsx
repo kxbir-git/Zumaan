@@ -6,6 +6,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { fmtPrice, getProductById, type ProductDTO } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart-store";
+import { HERO_WIDTHS, imgSrcSet, imgUrl } from "@/lib/image";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -101,7 +102,17 @@ function ProductPage() {
         >
           <div className="sticky top-24 overflow-hidden rounded-2xl bg-muted">
             <div className="relative aspect-[4/5]">
-              <img src={image} alt={product.name} className="h-full w-full object-cover" width={1080} height={1350} />
+              <img
+                src={imgUrl(image, { width: 1280 })}
+                srcSet={imgSrcSet(image, HERO_WIDTHS)}
+                sizes="(min-width: 1024px) 48vw, 100vw"
+                alt={product.name}
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-cover"
+                width={1080}
+                height={1350}
+              />
               {product.is_new && (
                 <span className="absolute left-4 top-4 rounded-full bg-background/80 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-ember backdrop-blur">
                   NEW
