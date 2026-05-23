@@ -54,31 +54,6 @@ const productsQueryOptions = (s: ShopSearch) =>
     staleTime: 30_000,
   });
 
-export const Route = createFileRoute("/shop")({
-  validateSearch: zodValidator(searchSchema),
-  loaderDeps: ({ search }) => ({
-    category: search.category,
-    q: search.q,
-    sort: search.sort,
-    maxPrice: search.maxPrice,
-    page: search.page,
-  }),
-  loader: ({ context, deps }) => {
-    context.queryClient.ensureQueryData(productsQueryOptions(deps));
-  },
-  component: ShopPage,
-  errorComponent: ShopError,
-  pendingComponent: CatalogSkeleton,
-  head: () => ({
-    meta: [
-      { title: "Shop — NEONFIT 2027 Drop" },
-      { name: "description", content: "Browse the full NEONFIT 2027 catalog. Techwear, oversized cuts, limited drops." },
-      { property: "og:title", content: "Shop — NEONFIT 2027" },
-      { property: "og:description", content: "Browse the full NEONFIT 2027 catalog." },
-    ],
-  }),
-});
-
 function CatalogSkeleton() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
@@ -103,6 +78,31 @@ function CatalogSkeleton() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/shop")({
+  validateSearch: zodValidator(searchSchema),
+  loaderDeps: ({ search }) => ({
+    category: search.category,
+    q: search.q,
+    sort: search.sort,
+    maxPrice: search.maxPrice,
+    page: search.page,
+  }),
+  loader: ({ context, deps }) => {
+    context.queryClient.ensureQueryData(productsQueryOptions(deps));
+  },
+  component: ShopPage,
+  errorComponent: ShopError,
+  pendingComponent: CatalogSkeleton,
+  head: () => ({
+    meta: [
+      { title: "Shop — NEONFIT 2027 Drop" },
+      { name: "description", content: "Browse the full NEONFIT 2027 catalog. Techwear, oversized cuts, limited drops." },
+      { property: "og:title", content: "Shop — NEONFIT 2027" },
+      { property: "og:description", content: "Browse the full NEONFIT 2027 catalog." },
+    ],
+  }),
+});
 
 function ShopError({ error }: { error: Error }) {
   const router = useRouter();
