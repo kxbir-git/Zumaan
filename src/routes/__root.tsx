@@ -13,6 +13,10 @@ import appCss from "../styles.css?url";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteHeader } from "@/components/site-header";
 import { CartDrawer } from "@/components/cart-drawer";
+import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-store";
+import { useWishlist } from "@/lib/wishlist-store";
 
 function NotFoundComponent() {
   return (
@@ -96,11 +100,32 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  // Prevent FOUC: ensure theme class is applied on first paint client-side
+  const router = useRouter();
+
   useEffect(() => {
     const stored = localStorage.getItem("theme") ?? "dark";
     document.documentElement.classList.toggle("dark", stored !== "light");
   }, []);
+
+  useEffect(() => {
+    const setUser = useAuth.getState().setUser;
+    const hydrateWishlist = useWishlist.getState().hydrate;
+    const clearWishlist = useWishlist.getState().clear;
+
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+      if (data.session) hydrateWishlist();
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session) hydrateWishlist();
+      else clearWishlist();
+      router.invalidate();
+      queryClient.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -111,6 +136,7 @@ function RootComponent() {
             <Outlet />
           </main>
           <CartDrawer />
+          <Toaster position="top-right" richColors />
         </div>
       </ThemeProvider>
     </QueryClientProvider>
