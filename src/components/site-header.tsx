@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Moon, Search, ShoppingBag, Sun, User } from "lucide-react";
+import { LogOut, Moon, Search, ShoppingBag, Sun, User } from "lucide-react";
 import { useTheme } from "./theme-provider";
 import { useCart, cartCount } from "@/lib/cart-store";
+import { useAuth, signOut } from "@/lib/auth-store";
+import { toast } from "sonner";
 
 const NAV = [
   { to: "/shop", label: "Shop" },
@@ -14,10 +16,18 @@ const NAV = [
 export function SiteHeader() {
   const { theme, toggle } = useTheme();
   const { items, toggle: toggleCart } = useCart();
+  const user = useAuth((s) => s.user);
   const count = cartCount(items);
   const { scrollY } = useScroll();
   const backdropFilter = useTransform(scrollY, [0, 80], ["blur(0px) saturate(160%)", "blur(18px) saturate(160%)"]);
   const bg = useTransform(scrollY, [0, 80], ["rgba(0,0,0,0)", "color-mix(in oklab, var(--card) 70%, transparent)"]);
+
+  const handleAuthClick = async () => {
+    if (user) {
+      await signOut();
+      toast.success("Signed out");
+    }
+  };
 
   return (
     <motion.header
@@ -61,9 +71,24 @@ export function SiteHeader() {
           >
             {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
           </button>
-          <button className="rounded-md p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground">
-            <User className="h-[18px] w-[18px]" />
-          </button>
+          {user ? (
+            <button
+              onClick={handleAuthClick}
+              className="rounded-md p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              aria-label="Sign out"
+              title={user.email ?? "Sign out"}
+            >
+              <LogOut className="h-[18px] w-[18px]" />
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-md p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              aria-label="Sign in"
+            >
+              <User className="h-[18px] w-[18px]" />
+            </Link>
+          )}
           <button
             onClick={toggleCart}
             className="relative ml-1 rounded-md p-2 text-foreground transition hover:bg-accent"
