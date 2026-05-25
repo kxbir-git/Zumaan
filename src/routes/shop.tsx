@@ -7,12 +7,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  Heart,
   Loader2,
   Plus,
   Search,
   SlidersHorizontal,
 } from "lucide-react";
 import { z } from "zod";
+import { toast } from "sonner";
 import {
   CATEGORY_OPTIONS,
   SORT_OPTIONS,
@@ -23,6 +25,8 @@ import {
   type Sort,
 } from "@/lib/products.functions";
 import { useCart } from "@/lib/cart-store";
+import { useWishlist } from "@/lib/wishlist-store";
+import { useAuth } from "@/lib/auth-store";
 import { CARD_WIDTHS, imgSrcSet, imgUrl } from "@/lib/image";
 
 const searchSchema = z.object({
@@ -124,7 +128,42 @@ function ShopError({ error }: { error: Error }) {
 
 function ShopCard({ p, idx }: { p: ProductDTO; idx: number }) {
   const add = useCart((s) => s.add);
+  const navigate = useNavigate();
+  const user = useAuth((s) => s.user);
+  const saved = useWishlist((s) => s.ids.has(p.id));
+  const toggleWish = useWishlist((s) => s.toggle);
   const image = p.images[0] ?? "";
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    add({
+      productId: p.id,
+      name: p.name,
+      image,
+      priceCents: p.price_cents,
+      size: p.sizes[Math.floor(p.sizes.length / 2)] ?? "M",
+      color: p.colors[0] ?? "Black",
+    });
+    toast.success(`${p.name} added to bag`);
+  };
+
+  const handleWish = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      toast.message("Sign in to save pieces", { description: "Your wishlist syncs across devices." });
+      navigate({ to: "/login" });
+      return;
+    }
+    try {
+      const res = await toggleWish(p.id);
+      toast.success(res.saved ? `Saved ${p.name}` : `Removed ${p.name}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Wishlist update failed");
+    }
+  };
+
   return (
     <motion.article
       layout
@@ -159,20 +198,26 @@ function ShopCard({ p, idx }: { p: ProductDTO; idx: number }) {
               SALE
             </span>
           )}
+
+          {/* Wishlist heart — always visible, top-right */}
+          <button
+            onClick={handleWish}
+            className={`absolute right-3 ${p.compare_at_cents && p.compare_at_cents > p.price_cents ? "top-12" : "top-3"} grid h-9 w-9 place-items-center rounded-full border backdrop-blur-md transition ${
+              saved
+                ? "border-ember bg-ember text-ember-foreground glow-ember"
+                : "border-border/60 bg-background/70 text-foreground hover:border-ember hover:text-ember"
+            }`}
+            aria-label={saved ? `Remove ${p.name} from wishlist` : `Save ${p.name} to wishlist`}
+            aria-pressed={saved}
+          >
+            <Heart className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
+          </button>
         </div>
       </Link>
 
+      {/* Quick-add — reveals on hover */}
       <button
-        onClick={() =>
-          add({
-            productId: p.id,
-            name: p.name,
-            image,
-            priceCents: p.price_cents,
-            size: p.sizes[Math.floor(p.sizes.length / 2)] ?? "M",
-            color: p.colors[0] ?? "Black",
-          })
-        }
+        onClick={handleAdd}
         className="absolute right-4 top-[calc(100%-3.5rem-1rem)] grid h-11 w-11 translate-y-2 place-items-center rounded-full bg-gradient-ember text-ember-foreground opacity-0 shadow-lg transition-all duration-300 hover:scale-110 hover:glow-ember group-hover:translate-y-0 group-hover:opacity-100"
         aria-label={`Quick add ${p.name}`}
       >
