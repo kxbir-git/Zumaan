@@ -108,21 +108,36 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-    const setUser = useAuth.getState().setUser;
+    const { setUser, setIsAdmin } = useAuth.getState();
     const hydrateWishlist = useWishlist.getState().hydrate;
     const clearWishlist = useWishlist.getState().clear;
 
+    const refreshAdmin = async (userId: string | undefined) => {
+      if (!userId) return setIsAdmin(false);
+      const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+      setIsAdmin(Boolean(data));
+    };
+
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
-      if (data.session) hydrateWishlist();
+      if (data.session) {
+        hydrateWishlist();
+        refreshAdmin(data.session.user.id);
+      }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       setUser(session?.user ?? null);
-      if (session) hydrateWishlist();
-      else clearWishlist();
+      if (session) {
+        hydrateWishlist();
+        refreshAdmin(session.user.id);
+      } else {
+        clearWishlist();
+        setIsAdmin(false);
+      }
       router.invalidate();
-      queryClient.invalidateQueries();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
