@@ -69,13 +69,22 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
+          customer_email: string | null
+          customer_name: string | null
           id: string
+          payment_screenshot_path: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          reject_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           shipping_address: Json | null
           shipping_cents: number
           status: Database["public"]["Enums"]["order_status"]
           stripe_session_id: string | null
           subtotal_cents: number
           total_cents: number
+          tracking_added_at: string | null
+          tracking_carrier: string | null
           tracking_number: string | null
           updated_at: string
           user_id: string
@@ -83,13 +92,22 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
           id?: string
+          payment_screenshot_path?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           shipping_address?: Json | null
           shipping_cents?: number
           status?: Database["public"]["Enums"]["order_status"]
           stripe_session_id?: string | null
           subtotal_cents?: number
           total_cents?: number
+          tracking_added_at?: string | null
+          tracking_carrier?: string | null
           tracking_number?: string | null
           updated_at?: string
           user_id: string
@@ -97,13 +115,22 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
           id?: string
+          payment_screenshot_path?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           shipping_address?: Json | null
           shipping_cents?: number
           status?: Database["public"]["Enums"]["order_status"]
           stripe_session_id?: string | null
           subtotal_cents?: number
           total_cents?: number
+          tracking_added_at?: string | null
+          tracking_carrier?: string | null
           tracking_number?: string | null
           updated_at?: string
           user_id?: string
@@ -191,6 +218,39 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: string
+          payment_instructions: string | null
+          payment_qr_path: string | null
+          payment_qr_url: string | null
+          payment_upi_id: string | null
+          singleton: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payment_instructions?: string | null
+          payment_qr_path?: string | null
+          payment_qr_url?: string | null
+          payment_upi_id?: string | null
+          singleton?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payment_instructions?: string | null
+          payment_qr_path?: string | null
+          payment_qr_url?: string | null
+          payment_upi_id?: string | null
+          singleton?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -263,6 +323,7 @@ export type Database = {
         | "out_for_delivery"
         | "delivered"
         | "cancelled"
+      payment_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -399,6 +460,7 @@ export const Constants = {
         "delivered",
         "cancelled",
       ],
+      payment_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
