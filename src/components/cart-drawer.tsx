@@ -88,7 +88,7 @@ export function CartDrawer() {
                   <span className="font-display text-2xl font-bold tabular-nums">{fmt(total)}</span>
                 </div>
                 <Link
-                  to="/"
+                  to="/checkout"
                   onClick={() => setOpen(false)}
                   className="group relative flex w-full items-center justify-center overflow-hidden rounded-full bg-gradient-ember px-6 py-3.5 font-medium text-ember-foreground transition-all hover:scale-[1.01] hover:glow-ember"
                 >

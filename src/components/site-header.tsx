@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { LogOut, Moon, Search, ShoppingBag, Sun, User } from "lucide-react";
+import { LogOut, Moon, Package, Search, Shield, ShoppingBag, Sun, User } from "lucide-react";
 import { useTheme } from "./theme-provider";
 import { useCart, cartCount } from "@/lib/cart-store";
 import { useAuth, signOut } from "@/lib/auth-store";
@@ -17,6 +17,7 @@ export function SiteHeader() {
   const { theme, toggle } = useTheme();
   const { items, toggle: toggleCart } = useCart();
   const user = useAuth((s) => s.user);
+  const isAdmin = useAuth((s) => s.isAdmin);
   const count = cartCount(items);
   const { scrollY } = useScroll();
   const backdropFilter = useTransform(scrollY, [0, 80], ["blur(0px) saturate(160%)", "blur(18px) saturate(160%)"]);
@@ -71,6 +72,26 @@ export function SiteHeader() {
           >
             {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
           </button>
+          {user && (
+            <Link
+              to="/orders"
+              className="hidden rounded-md p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground sm:inline-flex"
+              aria-label="My orders"
+              title="My orders"
+            >
+              <Package className="h-[18px] w-[18px]" />
+            </Link>
+          )}
+          {isAdmin && (
+            <Link
+              to="/_authenticated/admin/orders"
+              className="rounded-md p-2 text-ember transition hover:bg-accent"
+              aria-label="Admin"
+              title="Admin"
+            >
+              <Shield className="h-[18px] w-[18px]" />
+            </Link>
+          )}
           {user ? (
             <button
               onClick={handleAuthClick}
