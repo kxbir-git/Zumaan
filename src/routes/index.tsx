@@ -33,7 +33,7 @@ const PRODUCTS = [
 
 const CATEGORIES = ["All", "Tops", "Bottoms", "Footwear", "Accessories"] as const;
 
-const fmt = (c: number) => `$${(c / 100).toFixed(0)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(0)}`;
 
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);

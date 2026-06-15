@@ -3,7 +3,7 @@ import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCart, cartTotalCents, cartCount } from "@/lib/cart-store";
 import { Link } from "@tanstack/react-router";
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 
 export function CartDrawer() {
   const { items, isOpen, setOpen, remove, setQty } = useCart();
