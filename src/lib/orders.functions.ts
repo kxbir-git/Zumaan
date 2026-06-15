@@ -133,6 +133,62 @@ async function assertAdmin(supabase: any, userId: string) {
   if (!data) throw new Error("Forbidden");
 }
 
+export const adminStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const since = new Date();
+    since.setDate(since.getDate() - 30);
+    const sinceIso = since.toISOString();
+
+    const [allOrders, recent, productCount, customerCount] = await Promise.all([
+      supabaseAdmin.from("orders").select("payment_status,total_cents,created_at"),
+      supabaseAdmin
+        .from("orders")
+        .select("id,created_at,customer_name,customer_email,total_cents,payment_status")
+        .order("created_at", { ascending: false })
+        .limit(6),
+      supabaseAdmin.from("products").select("id", { count: "exact", head: true }),
+      supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),
+    ]);
+
+    const rows = allOrders.data ?? [];
+    let pending = 0, approved = 0, rejected = 0, revenueCents = 0, revenue30Cents = 0, orders30 = 0;
+    const dailyRevenue = new Map<string, number>();
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - (29 - i));
+      dailyRevenue.set(d.toISOString().slice(0, 10), 0);
+    }
+    for (const r of rows) {
+      if (r.payment_status === "pending") pending++;
+      else if (r.payment_status === "approved") {
+        approved++;
+        revenueCents += r.total_cents ?? 0;
+        if (r.created_at >= sinceIso) revenue30Cents += r.total_cents ?? 0;
+      } else if (r.payment_status === "rejected") rejected++;
+      if (r.created_at >= sinceIso) orders30++;
+      const day = (r.created_at as string).slice(0, 10);
+      if (r.payment_status === "approved" && dailyRevenue.has(day)) {
+        dailyRevenue.set(day, (dailyRevenue.get(day) ?? 0) + (r.total_cents ?? 0));
+      }
+    }
+    return {
+      totals: {
+        orders: rows.length,
+        pending, approved, rejected,
+        revenueCents, revenue30Cents, orders30,
+        products: productCount.count ?? 0,
+        customers: customerCount.count ?? 0,
+      },
+      recent: recent.data ?? [],
+      daily: Array.from(dailyRevenue.entries()).map(([date, cents]) => ({ date, cents })),
+    };
+  });
+
+
 export const adminListOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
