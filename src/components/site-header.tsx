@@ -84,7 +84,7 @@ export function SiteHeader() {
           )}
           {isAdmin && (
             <Link
-              to="/_authenticated/admin/orders"
+              to="/_authenticated/admin/dashboard"
               className="rounded-md p-2 text-ember transition hover:bg-accent"
               aria-label="Admin"
               title="Admin"
