@@ -18,7 +18,7 @@ const nav: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
 ];
 
 function AdminShell() {
-  const user = useAuthStore((s) => s.user);
+  const user = useAuth((s) => s.user);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const { data: admin, isLoading: checking } = useQuery({
