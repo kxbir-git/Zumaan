@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { LayoutDashboard, ShoppingBag, Settings, Loader2, ShieldAlert, ExternalLink } from "lucide-react";
 import { checkIsAdmin, claimFirstAdmin } from "@/lib/admin.functions";
 import { adminListOrders } from "@/lib/orders.functions";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuth } from "@/lib/auth-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
