@@ -11,11 +11,11 @@ export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — NEONFIT" }] }),
 });
 
-const nav = [
+const nav: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/_authenticated/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/_authenticated/admin/orders", label: "Orders", icon: ShoppingBag },
   { to: "/_authenticated/admin/settings", label: "Settings", icon: Settings },
-] as const;
+];
 
 function AdminShell() {
   const user = useAuthStore((s) => s.user);
