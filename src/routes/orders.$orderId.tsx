@@ -10,7 +10,7 @@ export const Route = createFileRoute("/orders/$orderId")({
   head: () => ({ meta: [{ title: "Order — NEONFIT" }] }),
 });
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 
 function OrderDetailPage() {
   const { orderId } = Route.useParams();

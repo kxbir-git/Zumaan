@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/admin/orders/$orderId")({
   head: () => ({ meta: [{ title: "Admin · Order — NEONFIT" }] }),
 });
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 
 function AdminOrderDetail() {
   const { orderId } = Route.useParams();
