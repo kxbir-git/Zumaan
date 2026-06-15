@@ -18,9 +18,9 @@ export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   head: () => ({ meta: [{ title: "Admin · Dashboard — NEONFIT" }] }),
 });
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 const fmtCompact = (c: number) =>
-  c >= 100000 ? `$${(c / 100000).toFixed(1)}k` : `$${(c / 100).toFixed(0)}`;
+  c >= 100000 ? `₹${(c / 100000).toFixed(1)}k` : `₹${(c / 100).toFixed(0)}`;
 
 function DashboardPage() {
   const { data, isLoading } = useQuery({

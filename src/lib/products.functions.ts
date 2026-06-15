@@ -100,4 +100,4 @@ export const getProductById = createServerFn({ method: "GET" })
     return (row as ProductDTO | null) ?? null;
   });
 
-export const fmtPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`;
+export const fmtPrice = (cents: number) => `₹${(cents / 100).toFixed(0)}`;

@@ -68,7 +68,7 @@ export const createOrder = createServerFn({ method: "POST" })
         subtotal_cents: subtotal,
         shipping_cents: shipping,
         total_cents: total,
-        currency: "USD",
+        currency: "INR",
         shipping_address: data.shippingAddress,
         customer_name: data.customerName,
         customer_email: data.customerEmail,

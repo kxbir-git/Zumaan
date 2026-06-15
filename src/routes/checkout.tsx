@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout")({
   }),
 });
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 
 function CheckoutPage() {
   const navigate = useNavigate();

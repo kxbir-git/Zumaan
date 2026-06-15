@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/admin/orders")({
   head: () => ({ meta: [{ title: "Admin · Orders — NEONFIT" }] }),
 });
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 
 function AdminOrdersPage() {
   const navigate = useNavigate();

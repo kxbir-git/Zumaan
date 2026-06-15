@@ -10,7 +10,7 @@ export const Route = createFileRoute("/orders")({
   head: () => ({ meta: [{ title: "My orders — NEONFIT" }] }),
 });
 
-const fmt = (c: number) => `$${(c / 100).toFixed(2)}`;
+const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
 
 function statusBadge(s: string, payment: string) {
   if (payment === "pending") return { label: "Awaiting review", cls: "bg-amber-500/15 text-amber-400" };
