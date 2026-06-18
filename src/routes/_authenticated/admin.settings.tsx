@@ -9,7 +9,7 @@ import { checkIsAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: AdminSettingsPage,
-  head: () => ({ meta: [{ title: "Admin · Settings — NEONFIT" }] }),
+  head: () => ({ meta: [{ title: "Admin · Settings — Zuman" }] }),
 });
 
 function AdminSettingsPage() {

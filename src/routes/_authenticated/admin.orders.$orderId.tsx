@@ -13,7 +13,7 @@ import { sendTransactionalEmail } from "@/lib/email-send";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/$orderId")({
   component: AdminOrderDetail,
-  head: () => ({ meta: [{ title: "Admin · Order — NEONFIT" }] }),
+  head: () => ({ meta: [{ title: "Admin · Order — Zuman" }] }),
 });
 
 const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;

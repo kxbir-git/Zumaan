@@ -15,7 +15,7 @@ import { adminStats } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   component: DashboardPage,
-  head: () => ({ meta: [{ title: "Admin · Dashboard — NEONFIT" }] }),
+  head: () => ({ meta: [{ title: "Admin · Dashboard — Zuman" }] }),
 });
 
 const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;
