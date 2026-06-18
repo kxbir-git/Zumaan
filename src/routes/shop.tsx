@@ -101,9 +101,9 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Shop — Zuman 2027 Drop" },
-      { name: "description", content: "Browse the full Zuman 2027 catalog. Techwear, oversized cuts, limited drops." },
-      { property: "og:title", content: "Shop — Zuman 2027" },
-      { property: "og:description", content: "Browse the full Zuman 2027 catalog." },
+      { name: "description", content: "Browse the full Zuman* 2026 catalog. Techwear, oversized cuts, limited drops." },
+      { property: "og:title", content: "Shop — Zuman* 2026" },
+      { property: "og:description", content: "Browse the full Zuman* 2026 catalog." },
     ],
   }),
 });
