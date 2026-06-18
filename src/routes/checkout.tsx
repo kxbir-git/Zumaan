@@ -14,7 +14,7 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
   head: () => ({
     meta: [
-      { title: "Checkout — Zuman" },
+      { title: "Checkout — Zuman*" },
       { name: "description", content: "Pay by scanning the QR code, upload your screenshot, and we'll confirm your order." },
     ],
   }),
