@@ -7,7 +7,7 @@ import { getMyOrder } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/orders/$orderId")({
   component: OrderDetailPage,
-  head: () => ({ meta: [{ title: "Order — NEONFIT" }] }),
+  head: () => ({ meta: [{ title: "Order — Zuman" }] }),
 });
 
 const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;

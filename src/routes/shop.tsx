@@ -100,10 +100,10 @@ export const Route = createFileRoute("/shop")({
   pendingComponent: CatalogSkeleton,
   head: () => ({
     meta: [
-      { title: "Shop — NEONFIT 2027 Drop" },
-      { name: "description", content: "Browse the full NEONFIT 2027 catalog. Techwear, oversized cuts, limited drops." },
-      { property: "og:title", content: "Shop — NEONFIT 2027" },
-      { property: "og:description", content: "Browse the full NEONFIT 2027 catalog." },
+      { title: "Shop — Zuman 2027 Drop" },
+      { name: "description", content: "Browse the full Zuman 2027 catalog. Techwear, oversized cuts, limited drops." },
+      { property: "og:title", content: "Shop — Zuman 2027" },
+      { property: "og:description", content: "Browse the full Zuman 2027 catalog." },
     ],
   }),
 });
