@@ -1,16 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Plus, Sparkles, Star, Zap } from "lucide-react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import heroImg from "@/assets/hero-model.jpg";
-import tee from "@/assets/product-tee.jpg";
-import pants from "@/assets/product-pants.jpg";
-import hoodie from "@/assets/product-hoodie.jpg";
-import sneakers from "@/assets/product-sneakers.jpg";
 import { useCart } from "@/lib/cart-store";
+import { listProducts, type ProductDTO, fmtPrice } from "@/lib/products.functions";
+
+const homeProductsQO = queryOptions({
+  queryKey: ["products", "list", { home: true }],
+  queryFn: () => listProducts({ data: { pageSize: 24, maxPrice: 1_000_00 } }),
+});
 
 export const Route = createFileRoute("/")({
   component: Index,
+  loader: ({ context }) => context.queryClient.ensureQueryData(homeProductsQO),
+  errorComponent: ({ error }) => (
+    <div className="grid min-h-[60dvh] place-items-center p-8 text-center text-sm text-muted-foreground">
+      Failed to load products: {error.message}
+    </div>
+  ),
+  notFoundComponent: () => <div className="p-8">Not found.</div>,
   head: () => ({
     meta: [
       { title: "Zuman — Futuristic Streetwear / 2027 Drops" },
@@ -22,18 +32,7 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-const PRODUCTS = [
-  { id: "p1", name: "TACTICAL CROP HOODIE", price: 14800, tag: "NEW", image: hoodie, category: "Tops" },
-  { id: "p2", name: "STRAP CARGO 02", price: 18900, tag: "DROP", image: pants, category: "Bottoms" },
-  { id: "p3", name: "EMBER TEE / OVERSIZED", price: 6900, tag: "NEW", image: tee, category: "Tops" },
-  { id: "p4", name: "ZERO-G RUNNER", price: 24500, tag: "LTD", image: sneakers, category: "Footwear" },
-  { id: "p5", name: "PHANTOM TECH PANT", price: 17200, tag: "NEW", image: pants, category: "Bottoms" },
-  { id: "p6", name: "ARCHIVE GRAPHIC TEE", price: 7400, tag: "DROP", image: tee, category: "Tops" },
-];
-
 const CATEGORIES = ["All", "Tops", "Bottoms", "Footwear", "Accessories"] as const;
-
-const fmt = (c: number) => `₹${(c / 100).toFixed(0)}`;
 
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -56,7 +55,6 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
       </motion.div>
 
-      {/* Ember spotlight */}
       <div className="pointer-events-none absolute left-1/4 top-1/3 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-ember/20 blur-[120px]" />
 
       <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-20 sm:pb-24 lg:px-8">
@@ -89,26 +87,24 @@ function Hero() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.55 }}
-          className="mt-10 flex flex-wrap items-center gap-3"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.55 }}
+          className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <a href="#shop" className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-ember px-7 py-3.5 font-medium text-ember-foreground transition-all hover:scale-[1.02] hover:glow-ember">
-            Shop the drop
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </a>
-          <a href="#shop" className="inline-flex items-center gap-2 rounded-full border border-border bg-background/40 px-7 py-3.5 font-medium backdrop-blur transition hover:bg-accent">
+          <Link to="/shop" className="group inline-flex items-center gap-2 rounded-full bg-gradient-ember px-7 py-3.5 text-sm font-medium text-ember-foreground transition hover:glow-ember">
+            Shop the drop <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+          <a href="#shop" className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm text-muted-foreground transition hover:border-ember hover:text-ember">
             <Zap className="h-4 w-4 text-ember" /> Lookbook 04
           </a>
         </motion.div>
 
-        {/* Marquee strip */}
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
           className="mt-14 flex items-center gap-8 border-t border-border/50 pt-6 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground"
         >
           <span>04 · ZUMAN/27</span>
           <span className="hidden h-px flex-1 bg-border sm:block" />
-          <span className="hidden sm:inline">Free worldwide shipping over $200</span>
+          <span className="hidden sm:inline">Free shipping over ₹2000</span>
           <span className="hidden md:inline">·</span>
           <span className="hidden md:inline">Limited to 500 units</span>
         </motion.div>
@@ -117,8 +113,11 @@ function Hero() {
   );
 }
 
-function ProductCard({ p, idx }: { p: (typeof PRODUCTS)[number]; idx: number }) {
+function ProductCard({ p, idx }: { p: ProductDTO; idx: number }) {
   const add = useCart((s) => s.add);
+  const image = p.images?.[0] ?? "";
+  const size = p.sizes?.[0] ?? "M";
+  const color = p.colors?.[0] ?? "Black";
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -127,53 +126,49 @@ function ProductCard({ p, idx }: { p: (typeof PRODUCTS)[number]; idx: number }) 
       transition={{ duration: 0.5, delay: idx * 0.05 }}
       className="group relative shrink-0 snap-start"
     >
-      <div className="relative aspect-[4/5] w-[280px] overflow-hidden rounded-xl bg-muted sm:w-[320px] md:w-[360px]">
-        <img
-          src={p.image}
-          alt={p.name}
-          loading="lazy"
-          width={1024}
-          height={1280}
-          className="h-full w-full object-cover transition-transform duration-700 will-change-transform group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <Link to="/shop/$productId" params={{ productId: p.id }} className="block">
+        <div className="relative aspect-[4/5] w-[280px] overflow-hidden rounded-xl bg-muted sm:w-[320px] md:w-[360px]">
+          <img
+            src={image}
+            alt={p.name}
+            loading="lazy"
+            width={1024}
+            height={1280}
+            className="h-full w-full object-cover transition-transform duration-700 will-change-transform group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-        {/* Tag */}
-        <span className="absolute left-3 top-3 rounded-full bg-background/80 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-ember backdrop-blur">
-          {p.tag}
-        </span>
+          {p.is_new && (
+            <span className="absolute left-3 top-3 rounded-full bg-background/80 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-ember backdrop-blur">
+              NEW
+            </span>
+          )}
 
-        {/* Add button */}
-        <button
-          onClick={() =>
-            add({
-              productId: p.id,
-              name: p.name,
-              image: p.image,
-              priceCents: p.price,
-              size: "M",
-              color: "Black",
-            })
-          }
-          className="absolute bottom-4 right-4 grid h-11 w-11 translate-y-2 place-items-center rounded-full bg-gradient-ember text-ember-foreground opacity-0 shadow-lg transition-all duration-300 hover:scale-110 hover:glow-ember group-hover:translate-y-0 group-hover:opacity-100"
-          aria-label={`Add ${p.name} to bag`}
-        >
-          <Plus className="h-5 w-5" />
-        </button>
-      </div>
-
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{p.category}</p>
-          <h3 className="mt-0.5 font-display text-sm font-bold tracking-tight">{p.name}</h3>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              add({ productId: p.id, name: p.name, image, priceCents: p.price_cents, size, color });
+            }}
+            className="absolute bottom-4 right-4 grid h-11 w-11 translate-y-2 place-items-center rounded-full bg-gradient-ember text-ember-foreground opacity-0 shadow-lg transition-all duration-300 hover:scale-110 hover:glow-ember group-hover:translate-y-0 group-hover:opacity-100"
+            aria-label={`Add ${p.name} to bag`}
+          >
+            <Plus className="h-5 w-5" />
+          </button>
         </div>
-        <p className="font-display text-sm font-bold tabular-nums">{fmt(p.price)}</p>
-      </div>
+
+        <div className="mt-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{p.category}</p>
+            <h3 className="mt-0.5 font-display text-sm font-bold tracking-tight">{p.name}</h3>
+          </div>
+          <p className="font-display text-sm font-bold tabular-nums">{fmtPrice(p.price_cents)}</p>
+        </div>
+      </Link>
     </motion.article>
   );
 }
 
-function NewArrivals() {
+function NewArrivals({ products }: { products: ProductDTO[] }) {
   return (
     <section id="shop" className="relative border-t border-border py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -190,28 +185,35 @@ function NewArrivals() {
               Fresh off the press<span className="text-ember">.</span>
             </h2>
           </div>
-          <a href="#" className="group hidden items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex">
+          <Link to="/shop" className="group hidden items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex">
             View all
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </a>
+          </Link>
         </motion.div>
 
-        <div className="mt-12 -mx-6 overflow-x-auto px-6 scrollbar-hide">
-          <div className="flex snap-x snap-mandatory gap-6 pb-2">
-            {PRODUCTS.map((p, i) => (
-              <ProductCard key={p.id} p={p} idx={i} />
-            ))}
-            <div className="shrink-0 pr-6" aria-hidden />
+        {products.length === 0 ? (
+          <p className="mt-12 text-muted-foreground">No products yet. Add some from the admin panel.</p>
+        ) : (
+          <div className="mt-12 -mx-6 overflow-x-auto px-6 scrollbar-hide">
+            <div className="flex snap-x snap-mandatory gap-6 pb-2">
+              {products.map((p, i) => (
+                <ProductCard key={p.id} p={p} idx={i} />
+              ))}
+              <div className="shrink-0 pr-6" aria-hidden />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
 }
 
-function CategoryTabs() {
+function CategoryTabs({ products }: { products: ProductDTO[] }) {
   const [active, setActive] = useState<(typeof CATEGORIES)[number]>("All");
-  const filtered = active === "All" ? PRODUCTS : PRODUCTS.filter((p) => p.category === active);
+  const filtered = useMemo(
+    () => (active === "All" ? products : products.filter((p) => p.category === active)),
+    [active, products],
+  );
 
   return (
     <section className="relative border-t border-border bg-gradient-to-b from-background via-card/20 to-background py-24">
@@ -226,7 +228,6 @@ function CategoryTabs() {
           </h2>
         </motion.div>
 
-        {/* Tabs */}
         <div className="mt-10 flex flex-wrap gap-2">
           {CATEGORIES.map((c) => {
             const isActive = c === active;
@@ -249,14 +250,13 @@ function CategoryTabs() {
           })}
         </div>
 
-        {/* Grid */}
         <motion.div
           layout
           className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
           {filtered.map((p, i) => (
             <motion.div key={p.id} layout className="w-full">
-              <ProductCard p={{ ...p }} idx={i} />
+              <ProductCard p={p} idx={i} />
             </motion.div>
           ))}
           {filtered.length === 0 && (
@@ -316,11 +316,13 @@ function Footer() {
 }
 
 function Index() {
+  const { data } = useSuspenseQuery(homeProductsQO);
+  const products = data.items;
   return (
     <>
       <Hero />
-      <NewArrivals />
-      <CategoryTabs />
+      <NewArrivals products={products} />
+      <CategoryTabs products={products} />
       <ManifestoStrip />
       <Footer />
     </>
