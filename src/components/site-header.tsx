@@ -39,10 +39,10 @@ export function SiteHeader() {
         {/* Logo */}
         <Link to="/" className="group flex items-center gap-2">
           <span className="relative grid h-8 w-8 place-items-center rounded-md bg-gradient-ember font-display text-sm font-black text-ember-foreground">
-            N
+            Z
             <span className="absolute inset-0 -z-10 rounded-md blur-md opacity-60 bg-gradient-ember" />
           </span>
-          <span className="font-display text-lg font-black tracking-tight">NEONFIT</span>
+          <span className="font-display text-lg font-black tracking-tight">ZUMAN</span>
           <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:inline">/27</span>
         </Link>
 

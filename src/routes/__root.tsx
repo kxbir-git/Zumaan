@@ -63,10 +63,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NEONFIT — 2027 Streetwear" },
+      { title: "Zuman — 2027 Streetwear" },
       { name: "description", content: "Futuristic streetwear drops. Bold cuts, premium fabrics, limited runs." },
       { name: "theme-color", content: "#0d0d0d" },
-      { property: "og:title", content: "NEONFIT — 2027 Streetwear" },
+      { property: "og:title", content: "Zuman — 2027 Streetwear" },
       { property: "og:description", content: "Futuristic streetwear drops." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

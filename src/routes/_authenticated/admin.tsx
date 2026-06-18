@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminShell,
-  head: () => ({ meta: [{ title: "Admin — NEONFIT" }] }),
+  head: () => ({ meta: [{ title: "Admin — Zuman" }] }),
 });
 
 const nav: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [

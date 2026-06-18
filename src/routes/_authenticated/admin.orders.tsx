@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/orders")({
   component: AdminOrdersPage,
-  head: () => ({ meta: [{ title: "Admin · Orders — NEONFIT" }] }),
+  head: () => ({ meta: [{ title: "Admin · Orders — Zuman" }] }),
 });
 
 const fmt = (c: number) => `₹${(c / 100).toFixed(2)}`;

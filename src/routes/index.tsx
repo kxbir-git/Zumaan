@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "NEONFIT — Futuristic Streetwear / 2027 Drops" },
+      { title: "Zuman — Futuristic Streetwear / 2027 Drops" },
       { name: "description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs. Shop the 2027 collection." },
-      { property: "og:title", content: "NEONFIT — Futuristic Streetwear" },
+      { property: "og:title", content: "Zuman — Futuristic Streetwear" },
       { property: "og:description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs." },
       { property: "og:image", content: heroImg },
     ],
@@ -46,7 +46,7 @@ function Hero() {
       <motion.div style={{ y, opacity }} className="absolute inset-0">
         <img
           src={heroImg}
-          alt="NEONFIT 2027 collection model in techwear"
+          alt="Zuman 2027 collection model in techwear"
           className="h-full w-full object-cover object-[60%_center] opacity-80"
           width={1080}
           height={1920}
@@ -106,7 +106,7 @@ function Hero() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
           className="mt-14 flex items-center gap-8 border-t border-border/50 pt-6 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <span>04 · NEONFIT/27</span>
+          <span>04 · ZUMAN/27</span>
           <span className="hidden h-px flex-1 bg-border sm:block" />
           <span className="hidden sm:inline">Free worldwide shipping over $200</span>
           <span className="hidden md:inline">·</span>
@@ -301,8 +301,8 @@ function Footer() {
     <footer className="border-t border-border py-12">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-6 sm:flex-row sm:items-center lg:px-8">
         <div className="flex items-center gap-3">
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-gradient-ember font-display font-black text-ember-foreground">N</span>
-          <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">© NEONFIT/27 · All rights reserved</span>
+          <span className="grid h-8 w-8 place-items-center rounded-md bg-gradient-ember font-display font-black text-ember-foreground">Z</span>
+          <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">© ZUMAN/27 · All rights reserved</span>
         </div>
         <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
           <a href="#" className="transition hover:text-foreground">Returns</a>
