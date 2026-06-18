@@ -62,7 +62,7 @@ function DashboardPage() {
           label="Revenue · 30d"
           value={fmt(t.revenue30Cents)}
           sub={`${fmt(t.revenueCents)} all-time`}
-          icon={DollarSign}
+          icon={rupeeSign}
           tone="ember"
         />
         <Kpi
@@ -92,7 +92,7 @@ function DashboardPage() {
           label="AOV"
           value={t.approved ? fmt(Math.round(t.revenueCents / t.approved)) : "—"}
           sub="Average order value"
-          icon={DollarSign}
+          icon={rupeeSign}
         />
         <Kpi
           label="Conversion"
@@ -172,7 +172,7 @@ function Kpi({
   label: string;
   value: string;
   sub?: string;
-  icon: typeof DollarSign;
+  icon: typeof rupeeSign;
   tone?: "ember" | "amber" | "emerald";
   href?: string;
 }) {
