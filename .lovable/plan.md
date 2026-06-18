@@ -33,7 +33,7 @@ I'll trigger the email setup dialog now so we can scaffold the templates on your
 
 ## Technical notes
 - All writes go through `createServerFn` + `requireSupabaseAuth`. Admin-only fns check `has_role(userId,'admin')` before doing anything.
-- Email sender uses `/lovable/email/transactional/send` with the user's bearer; idempotency keys prevent dupes on retry.
+- Email sender uses `/kabir/email/transactional/send` with the user's bearer; idempotency keys prevent dupes on retry.
 - Screenshots are validated server-side: max 5 MB, jpeg/png/webp only.
 
 ## Open question
