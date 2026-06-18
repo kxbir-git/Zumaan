@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   notFoundComponent: () => <div className="p-8">Not found.</div>,
   head: () => ({
     meta: [
-      { title: "Zuman — Futuristic Streetwear / 2027 Drops" },
+      { title: "Zuman* — Futuristic Streetwear / 2026 Drops" },
       { name: "description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs. Shop the 2026 collection." },
       { property: "og:title", content: "Zuman* — Futuristic Streetwear" },
       { property: "og:description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs." },
@@ -45,7 +45,7 @@ function Hero() {
       <motion.div style={{ y, opacity }} className="absolute inset-0">
         <img
           src={heroImg}
-          alt="Zuman* 2027 collection model in techwear"
+          alt="Zuman* 2026 collection model in techwear"
           className="h-full w-full object-cover object-[60%_center] opacity-80"
           width={1080}
           height={1920}
@@ -83,7 +83,7 @@ function Hero() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-6 max-w-md text-balance text-base text-muted-foreground sm:text-lg"
         >
-          Techwear cuts, archival graphics, and limited drops. Built for the streets of 2027.
+          Techwear cuts, archival graphics, and limited drops. Built for the streets of 2026.
         </motion.p>
 
         <motion.div
@@ -302,7 +302,7 @@ function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-6 sm:flex-row sm:items-center lg:px-8">
         <div className="flex items-center gap-3">
           <span className="grid h-8 w-8 place-items-center rounded-md bg-gradient-ember font-display font-black text-ember-foreground">Z</span>
-          <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">© ZUMAN/27 · All rights reserved</span>
+          <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">© ZUMAN*/26 · All rights reserved</span>
         </div>
         <nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
           <a href="#" className="transition hover:text-foreground">Returns</a>
