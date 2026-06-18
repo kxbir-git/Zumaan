@@ -1,4 +1,4 @@
-// Best-effort helper to enqueue a transactional email through Lovable Emails.
+// Best-effort helper to enqueue a transactional email through kabir Emails.
 // If the email infrastructure isn't set up yet, sends silently fail (logged server-side)
 // so admin actions still complete successfully.
 
@@ -17,7 +17,7 @@ export async function sendTransactionalEmail(payload: EmailPayload): Promise<{ o
     const token = data.session?.access_token;
     if (!token) return { ok: false, error: "Not authenticated" };
 
-    const res = await fetch("/lovable/email/transactional/send", {
+    const res = await fetch("/kabir/email/transactional/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
