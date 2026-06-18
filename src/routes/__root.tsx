@@ -63,7 +63,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Zuman — 2027 Streetwear" },
+      { title: "Zuman* — 2026 Streetwear" },
       { name: "description", content: "Futuristic streetwear drops. Bold cuts, premium fabrics, limited runs." },
       { name: "theme-color", content: "#0d0d0d" },
       { property: "og:title", content: "Zuman — 2027 Streetwear" },
