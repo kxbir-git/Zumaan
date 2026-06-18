@@ -24,8 +24,8 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Zuman — Futuristic Streetwear / 2027 Drops" },
-      { name: "description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs. Shop the 2027 collection." },
-      { property: "og:title", content: "Zuman — Futuristic Streetwear" },
+      { name: "description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs. Shop the 2026 collection." },
+      { property: "og:title", content: "Zuman* — Futuristic Streetwear" },
       { property: "og:description", content: "Bold streetwear cuts, premium techwear fabrics, limited runs." },
       { property: "og:image", content: heroImg },
     ],
@@ -45,7 +45,7 @@ function Hero() {
       <motion.div style={{ y, opacity }} className="absolute inset-0">
         <img
           src={heroImg}
-          alt="Zuman 2027 collection model in techwear"
+          alt="Zuman* 2027 collection model in techwear"
           className="h-full w-full object-cover object-[60%_center] opacity-80"
           width={1080}
           height={1920}
@@ -102,7 +102,7 @@ function Hero() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
           className="mt-14 flex items-center gap-8 border-t border-border/50 pt-6 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground"
         >
-          <span>04 · ZUMAN/27</span>
+          <span>04 · ZUMAN*/26</span>
           <span className="hidden h-px flex-1 bg-border sm:block" />
           <span className="hidden sm:inline">Free shipping over ₹2000</span>
           <span className="hidden md:inline">·</span>
